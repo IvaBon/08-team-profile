@@ -7,7 +7,7 @@ const generaterFile=require('./src/generateFile');
 
 
 
-function members(){
+const members=()=>{
    inquirer
     .prompt([
         {
@@ -41,24 +41,10 @@ function members(){
                     name:'officeNumber',
                     message:'Enter manager office number',
                 },
-                {
-                    type:'confirm',
-                    name:'again',
-                    message:'Do you want to add another member',
-                    validate: again => {
-                        if(data.again==='Yes'){
-                            members();
-                        }   
-                          
-                        
-                    }
-
-                    
-                    
-                    
-                },
-            ]);
-            
+                
+            ]).then((managerInfo)=>{
+                anotherMember();
+            })
         }
         if(data.role==='Engineer'){
             inquirer.prompt([
@@ -67,12 +53,10 @@ function members(){
                     name:'githubUser',
                     message:'Enter engineer github username',
                 },
-                {
-                    type:'confirm',
-                    name:'again',
-                    message:'Do you want to add another member',
-                },
-            ]);
+                
+            ]).then((engineerInfo)=>{
+                anotherMember();
+            })
         }
         if(data.role==='Intern'){
             inquirer.prompt([
@@ -81,29 +65,30 @@ function members(){
                     name:'school',
                     message:'Enter intern school',
                 },
-                {
-                    type:'confirm',
-                    name:'again',
-                    message:'Do you want to add another member',
-                },
-            ]);
+            
+            ]).then((internInfo)=>{
+                anotherMember();
+            })
         }
         
     })
-//     .then(()=>{
-//         inquirer.prompt([
-//             {
-//                 type:'confirm',
-//                 name:'again',
-//                 message:'Do you want to add another member',
-                
-//             }
-//         ])
-//     })
   
 }
 
 
+const anotherMember=()=>{
+    inquirer.prompt([
+        {
+            type:'confirm',
+            name:'addMember',
+            message:'Do you want to add another member?',
+        }
+    ]).then((data)=>{
+        if(data.addMember===true){
+            members();
+        }
+    })
+}
 
 
 
