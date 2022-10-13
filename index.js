@@ -35,6 +35,8 @@ const members=()=>{
     ])
     .then ((data)=>{
         if (data.role==='Manager'){
+            
+            
              inquirer.prompt([
                 {
                     type:'input',
@@ -42,7 +44,9 @@ const members=()=>{
                     message:'Enter manager office number',
                 },
                 
-            ]).then((managerInfo)=>{
+            ])
+           
+            .then((managerInfo)=>{
                 anotherMember();
             })
         }
@@ -68,6 +72,9 @@ const members=()=>{
             
             ]).then((internInfo)=>{
                 anotherMember();
+                fs.writeFile('index.html', generaterFile(),(err)=>
+                    err ? console.log(err) : console.log('Generating Team')
+                )
             })
         }
         
