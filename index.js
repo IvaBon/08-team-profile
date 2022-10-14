@@ -3,12 +3,14 @@ const fs=require('fs');
 const Manager=require('./lib/manager');
 const Engineer=require('./lib/engineer');
 const Intern=require('./lib/intern');
-const generaterFile=require('./src/generateFile');
+const makePage=require('./src/generateFile');
 
 
-
-const members=()=>{
-   inquirer
+// array where all information from prompt is put
+teamMember=[];
+// prompt to ask question
+const members=async()=>{
+   const newMember= await inquirer
     .prompt([
         {
             type:'input',
@@ -33,56 +35,55 @@ const members=()=>{
         },
         
     ])
-    .then ((data)=>{
-        if (data.role==='Manager'){
-            
-            
-             inquirer.prompt([
-                {
-                    type:'input',
-                    name:'officeNumber',
-                    message:'Enter manager office number',
-                },
-                
-            ])
+    if (newMember.role==='Manager'){
            
-            .then((managerInfo)=>{
-                anotherMember();
-            })
-        }
-        if(data.role==='Engineer'){
-            inquirer.prompt([
-                {
-                    type:'input',
-                    name:'githubUser',
-                    message:'Enter engineer github username',
-                },
+        const manager = await inquirer.prompt([
+            {
+                type:'input',
+                name:'officeNumber',
+                message:'Enter manager office number',
+            },
                 
-            ]).then((engineerInfo)=>{
-                anotherMember();
-            })
-        }
-        if(data.role==='Intern'){
-            inquirer.prompt([
-                {
-                    type:'input',
-                    name:'school',
-                    message:'Enter intern school',
-                },
-            
-            ]).then((internInfo)=>{
-                anotherMember();
-                fs.writeFile('index.html', generaterFile(),(err)=>
-                    err ? console.log(err) : console.log('Generating Team')
-                )
-            })
-        }
+        ])
+        const newManager= new Manager(newMember.name, newMember.id, newMember.email, manager.officeNumber)
         
-    })
-  
+        teamMember.push(newManager)
+        anotherMember();
+    }
+    if(newMember.role==='Engineer'){
+
+        const engineer=await inquirer.prompt([
+            {
+                type:'input',
+                name:'githubUser',
+                message:'Enter engineer github username',
+            },
+        ])
+        const newEngineer=new Engineer(newMember.name, newMember.id, newMember.email, engineer.githubUser)
+        
+        teamMember.push(newEngineer)
+        anotherMember();
+    }
+    if(newMember.role==='Intern'){
+        const intern=await inquirer.prompt([
+            {
+                type:'input',
+                name:'school',
+                message:'Enter intern school',
+            },
+            
+        ])
+        const newIntern=new Intern(newMember.name, newMember.id, newMember.email, intern.school)
+        
+        teamMember.push(newIntern)
+        anotherMember();
+    }
+        
+    
 }
 
 
+// function to either start questions over again or end and generate html
 const anotherMember=()=>{
     inquirer.prompt([
         {
@@ -93,10 +94,21 @@ const anotherMember=()=>{
     ]).then((data)=>{
         if(data.addMember===true){
             members();
+        } else{
+            makehtml();
         }
     })
+}
+
+// seperate function to write html
+const makehtml=()=>{
+    fs.writeFile('./dist/index.html', makePage(teamMember), (err)=> 
+        err? console.log(err) : console.log('Generating HTML')
+    );
 }
 
 
 
 members();
+
+module.exports=teamMember;
